@@ -26,18 +26,8 @@ export default function Page({ cobaltData, fallback }) {
             pageTitle = cobaltData.pageContext.url.charAt(0).toUpperCase() + cobaltData.pageContext.url.slice(1)
         }
         switch (cobaltData.object.data.sys.baseType) {
-            case 'webpage':
-                let isSimpleHp = false;
-                try{
-                    isSimpleHp = cobaltData.object.data.attributes.classification.genres.includes('simplehp')
-                } catch (e) {}
-                if(isSimpleHp){ //For demo purpose
-                    render = <SimpleHomepage cobaltData={cobaltData} pageTitle={pageTitle} />;
-                } else if(cobaltData.object.data.pubInfo.sectionPath !== '/'){ //This is a section page with a DWP ("semi-automatic" page)
-                    render = <SemiAutomaticSectionPage cobaltData={cobaltData} pageTitle={pageTitle} />;
-                } else {
-                    render = <LandingPage cobaltData={cobaltData}/>;
-                }
+            case 'webpage':    
+                render = <SimpleHomepage cobaltData={cobaltData} pageTitle={pageTitle} />;
                 break;
             case 'webpagefragment':
                 // For live preview
