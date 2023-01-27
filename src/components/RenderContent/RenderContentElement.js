@@ -13,6 +13,7 @@ import { Link as MUILink } from '@mui/material';
 import { getCobaltDataHelper, getImageFormatUrl } from "../../lib/cobalt-cms/cobalt-helpers";
 import InlinePoll from "./InlinePoll";
 import SimpleMap from "./SimpleMap";
+import Card from "./Card";
 
 export default function RenderContentElement({ jsonElement, excludeElements, renderMode, cobaltData }) {
     let render = null;
@@ -256,48 +257,57 @@ export default function RenderContentElement({ jsonElement, excludeElements, ren
                     render = (
                         <div dangerouslySetInnerHTML={{ __html: cdata }}>
 
-                        </div>
-                    );
-                    if (renderMode && (['styled', 'newsletter'].includes(renderMode))) {
-                        render = (
-                            <Container sx={{ my: 2 }} maxWidth="md" component="div">
-                                <Box display="flex"
-                                    justifyContent="center"
-                                    alignItems="center">
-                                    {render}
-                                </Box>
-                            </Container>
-                        )
-                    }
-                    break;
-                case 'poll':
-                    render = <InlinePoll jsonElement={jsonElement} cobaltData={cobaltData} />;
-                    break;
-                case 'blockquote':
+                    </div>
+                );
+                if (renderMode && (['styled', 'newsletter'].includes(renderMode))) {
                     render = (
-                        <React.Fragment>
-                            {(jsonElement.elements ? jsonElement.elements.map((subel, i) => <RenderFormattedText key={i} jsonElement={subel} cobaltData={cobaltData} />) : null)}
-                        </React.Fragment>
-                    );
-                    if (renderMode && (['styled', 'newsletter'].includes(renderMode))) {
-                        render = (
-                            <Container sx={{ my: 3 }} maxWidth="sm" component="blockquote">
-                                <Typography variant="h5" component="p">
-                                    {render}
-                                </Typography>
-                            </Container>
-                        )
-                    }
-                    break;
-                case 'style':
-                    break;
-                default:
-                    render = (
-                        <div>Element not managed: {jsonElement.name}</div>
+                        <Container sx={{ my: 2 }} maxWidth="md" component="div">
+                            <Box display="flex"
+                                justifyContent="center"
+                                alignItems="center">
+                                {render}
+                            </Box>
+                        </Container>
                     )
-            }
+                }
+                break;
+            case 'poll':
+                render = <InlinePoll jsonElement={jsonElement} cobaltData={cobaltData} />;
+                break;
+            case 'blockquote':
+                render = (
+                    <React.Fragment>
+                        {(jsonElement.elements ? jsonElement.elements.map((subel, i) => <RenderFormattedText key={i} jsonElement={subel} cobaltData={cobaltData} />) : null)}
+                    </React.Fragment>
+                );
+                if (renderMode && (['styled', 'newsletter'].includes(renderMode))) {
+                    render = (
+                        <Container sx={{ my: 3 }} maxWidth="sm" component="blockquote">
+                            <Typography variant="h5" component="p">
+                                {render}
+                            </Typography>
+                        </Container>
+                    )
+                }
+                break;
+            case 'extra':
+                if(jsonElement.attributes['emk-class'] === 'card'){
+                    render = (
+                        <Container sx={{ my: 3 }} maxWidth="sm">
+                            <Card jsonElement={jsonElement} cobaltData={cobaltData} />
+                        </Container>
+                    )
+                }
+                render     
+            break;
+            case 'style':
+                break;
+            default:
+                render = (
+                    <div>Element not managed: {jsonElement.name}</div>
+                )
         }
-    } catch(e){console.log(e)}
+    }
     return render
 }
 
