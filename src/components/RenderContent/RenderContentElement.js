@@ -14,6 +14,7 @@ import { getCobaltDataHelper, getImageFormatUrl } from "../../lib/cobalt-cms/cob
 import InlinePoll from "./InlinePoll";
 import SimpleMap from "./SimpleMap";
 import Card from "./Card";
+import DynamicHTML from "../Fragment/DynamicHTML";
 
 export default function RenderContentElement({ jsonElement, excludeElements, renderMode, cobaltData }) {
     let render = null;
@@ -258,24 +259,32 @@ export default function RenderContentElement({ jsonElement, excludeElements, ren
                     );
                     break;
                 case 'embed':
-                    //TODO
-                    const cdata = jsonElement.elements.filter((el) => el.type = 'CDATA').map((el) => el.cdata)
-                    render = (
-                        <div dangerouslySetInnerHTML={{ __html: cdata }}>
-    
-                        </div>
-                    );
+                    const cdata = jsonElement.elements.filter((el) => el.type === 'cdata' || el.type === 'CDATA').map((el) => el.cdata);
+                    render = <DynamicHTML html={cdata} />;
+
                     if (renderMode && (['styled', 'newsletter'].includes(renderMode))) {
-                        render = (
+                        const noFlexContainer = cdata && cdata[0] && ( cdata[0].indexOf('infogram') >= 0 || cdata[0].indexOf('datawrapper') >= 0 );
+                        if(noFlexContainer) {
                             <Container sx={{ my: 2 }} maxWidth="md" component="div">
-                                <Box display="flex"
+                                <Box display="block"
                                     justifyContent="center"
                                     alignItems="center">
                                     {render}
                                 </Box>
                             </Container>
-                        )
+                        } else {
+                            render = (
+                                <Container sx={{ my: 2 }} maxWidth="md" component="div">
+                                    <Box display="flex"
+                                        justifyContent="center"
+                                        alignItems="center">
+                                        {render}
+                                    </Box>
+                                </Container>
+                            )
+                        }
                     }
+                    
                     break;
                 case 'poll':
                     render = <InlinePoll jsonElement={jsonElement} cobaltData={cobaltData} />;
